@@ -1,0 +1,33 @@
+# This is a Databricks asset bundle definition for databricks-with-claude.
+# The Databricks extension requires databricks.yml configuration file.
+# See https://docs.databricks.com/dev-tools/bundles/index.html for documentation.
+
+bundle:
+  name: databricks-with-claude
+
+resources:
+  # Define an app that manages the job in the bundle
+  apps:
+    sample:
+      name: 'sample'
+      description: 'An app which manages a job created by this bundle'
+
+      # The location of the source code for the app
+      source_code_path: ./app
+      permissions:
+        - level: CAN_USE
+          group_name: "account users"
+
+
+targets:
+  dev:
+    mode: development
+    default: true
+    workspace:
+      host: https://fe-vm-vdm-serverless-24mmko.cloud.databricks.com
+
+  ## Optionally, there could be 'staging' or 'prod' targets here.
+  #
+  # prod:
+  #   workspace:
+  #     host: https://adb-984752964297111.11.azuredatabricks.net
