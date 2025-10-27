@@ -6,6 +6,37 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This repository contains PySpark ETL modules for Databricks, implementing the medallion architecture pattern (bronze → silver → gold layers).
 
+## Prerequisites
+
+Before working with this project, ensure the following tools are installed and configured:
+
+### Required Tools
+
+1. **uv (Python Package Manager)**
+   - This project uses `uv` exclusively for Python package management
+   - Install: `curl -LsSf https://astral.sh/uv/install.sh | sh` (macOS/Linux)
+   - Alternative: `pip install uv`
+
+2. **Databricks CLI**
+   - Required for interacting with Databricks workspaces
+   - Install: `curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh`
+   - Alternative: `brew install databricks` (macOS)
+
+### Databricks Configuration
+
+The project requires a configured Databricks profile for workspace connectivity:
+
+1. **Create a profile**: `databricks configure --profile <profile-name>`
+   - You'll need the workspace URL (e.g., `https://dbc-abc123-def4.cloud.databricks.com`)
+   - Authentication method (Personal Access Token recommended for development)
+
+2. **Set environment variable**: `DATABRICKS_CONFIG_PROFILE`
+   - Add to shell profile: `export DATABRICKS_CONFIG_PROFILE=<profile-name>`
+   - Or use a `.env` file in the project root
+   - The `.env` file is gitignored for security
+
+3. **Verify configuration**: `databricks workspace list` should successfully connect
+
 ## Development Setup
 
 ### Python Environment
