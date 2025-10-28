@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a template repository for building PySpark applications on Databricks with Claude Code support. Customize this file with your project-specific requirements and architecture patterns.
+This repository contains PySpark ETL modules for Databricks, implementing the medallion architecture pattern (bronze → silver → gold layers).
 
 ## Prerequisites
 
@@ -17,25 +17,44 @@ Before working with this project, ensure the following tools are installed and c
    - Install: `curl -LsSf https://astral.sh/uv/install.sh | sh` (macOS/Linux)
    - Alternative: `pip install uv`
 
-2. **Databricks CLI**
-   - Required for interacting with Databricks workspaces
+2. **Databricks CLI (Optional)**
+   - Optional tool for workspace management tasks
    - Install: `curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh`
    - Alternative: `brew install databricks` (macOS)
 
 ### Databricks Configuration
 
-The project requires a configured Databricks profile for workspace connectivity:
+This project uses **Databricks Connect** (Python package, installed as a core dependency) to run all PySpark code remotely on your Databricks cluster. Authentication is handled via environment variables.
 
-1. **Create a profile**: `databricks configure --profile <profile-name>`
-   - You'll need the workspace URL (e.g., `https://dbc-abc123-def4.cloud.databricks.com`)
-   - Authentication method (Personal Access Token recommended for development)
+#### Required Environment Variables
 
-2. **Set environment variable**: `DATABRICKS_CONFIG_PROFILE`
-   - Add to shell profile: `export DATABRICKS_CONFIG_PROFILE=<profile-name>`
-   - Or use a `.env` file in the project root
-   - The `.env` file is gitignored for security
+Create a `.env` file in the project root with these variables:
 
-3. **Verify configuration**: `databricks workspace list` should successfully connect
+```bash
+# Required: Your Databricks workspace URL
+DATABRICKS_HOST=https://dbc-abc123-def4.cloud.databricks.com
+
+# Required: Personal Access Token
+# PAT authentication is recommended because Databricks managed MCP Servers
+# don't easily support Claude's OAuth flow
+DATABRICKS_TOKEN=your-personal-access-token-here
+
+# Choose ONE compute option:
+
+# For serverless compute (recommended for quick development):
+DATABRICKS_SERVERLESS_COMPUTE_ID=auto
+
+# OR for classic compute cluster:
+# DATABRICKS_CLUSTER_ID=your-cluster-id-here
+```
+
+The `.env` file is gitignored for security.
+
+#### Generate Personal Access Token
+
+1. Go to your Databricks workspace
+2. Click your username → Settings → Developer → Access tokens
+3. Generate new token and copy it to your `.env` file
 
 ## Development Setup
 
@@ -49,6 +68,7 @@ The project requires a configured Databricks profile for workspace connectivity:
 - Do NOT install PySpark locally
 - ALWAYS use `databricks.connect.DatabricksSession` instead of `pyspark.sql.SparkSession`
 - All Spark operations execute remotely on your configured Databricks cluster
+- Databricks Connect is already included as a core project dependency
 
 ## Common Commands
 
@@ -78,42 +98,65 @@ uv run ruff check .
 
 ## Architecture
 
-### Project Structure
-Organize your code according to your project needs. Common patterns include:
+### Medallion Architecture
+The ETL pipeline follows the medallion architecture with three layers:
 
-**Medallion Architecture (ETL Projects)**
+**Bronze Layer** (`src/etl/bronze/`)
+- Raw data ingestion from source systems
+- Minimal transformations (add metadata like ingestion timestamp, source file)
+- Data stored in original format with audit columns
+- Append-only for full history
+
+**Silver Layer** (`src/etl/silver/`)
+- Cleansed and validated data
+- Remove duplicates, handle nulls, standardize formats
+- Data quality validations and flags
+- Typically overwrite mode for current state
+
+**Gold Layer** (`src/etl/gold/`)
+- Business-level aggregations and metrics
+- Optimized for reporting and analytics
+- Denormalized for query performance
+- Business logic applied
+
+### Base ETL Class
+All ETL jobs inherit from `BaseETL` (`src/etl/base.py`) which provides:
+- `extract()`: Read data from source
+- `transform()`: Apply transformations
+- `load()`: Write data to target
+- `run()`: Execute full pipeline
+
+### Module Structure
 ```
-src/
-├── etl/
-│   ├── base.py          # Base ETL class
-│   ├── bronze/          # Raw data ingestion
-│   ├── silver/          # Data cleansing
-│   └── gold/            # Business aggregations
+src/etl/
+├── base.py              # BaseETL abstract class
+├── bronze/              # Raw data ingestion modules
+├── silver/              # Data cleansing modules
+└── gold/                # Aggregation and business logic modules
 ```
 
-**Application Structure**
+### Creating New ETL Jobs
+1. Create a new module in the appropriate layer directory (bronze/silver/gold)
+2. Inherit from `BaseETL` and implement `extract()`, `transform()`, and `load()` methods
+3. Initialize with source path and optional SparkSession
+4. Call `run(target_path)` to execute the pipeline
+
+Example:
+```python
+from src.etl.bronze.example_ingestion import ExampleBronzeETL
+
+etl = ExampleBronzeETL(source_path="/path/to/source")
+etl.run(target_path="/path/to/bronze/table")
 ```
-src/
-├── models/              # Data models
-├── services/            # Business logic
-├── utils/               # Helper functions
-└── pipelines/           # Data pipelines
-```
 
-### Best Practices
+### Data Formats
+- All layers use Delta Lake format for ACID transactions and time travel
+- Bronze layer preserves original data structure
+- Silver and gold layers may reshape data for optimization
 
-**Data Processing**
-- Use Delta Lake format for ACID transactions and time travel
-- Implement proper error handling and logging
-- Write modular, testable code
-
-**Testing Strategy**
-- Unit tests in `tests/` should mirror the `src/` structure
+### Testing Strategy
+- Unit tests in `tests/` mirror the `src/` structure
 - Use DatabricksSession fixtures for integration tests (see `tests/conftest.py`)
 - Test data transformations with sample data
+- Test each ETL method (extract, transform, load) independently
 - All tests run against your remote Databricks cluster via Databricks Connect
-
-**Code Organization**
-- Keep business logic separate from data access code
-- Use type hints for better code clarity
-- Document complex transformations and business rules
