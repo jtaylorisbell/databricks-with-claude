@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This repository contains PySpark ETL modules for Databricks, implementing the medallion architecture pattern (bronze → silver → gold layers).
+This is a template repository for building PySpark applications on Databricks with Claude Code support. Customize this file with your project-specific requirements and architecture patterns.
 
 ## Prerequisites
 
@@ -44,11 +44,11 @@ The project requires a configured Databricks profile for workspace connectivity:
 - Install dependencies: `uv sync`
 - Add new dependencies: `uv add <package_name>`
 
-### PySpark Dependencies
-When adding PySpark-related dependencies, note that PySpark is typically provided by the Databricks runtime. For local development and testing, add it as a dev dependency:
-```bash
-uv add --dev pyspark
-```
+### PySpark and Databricks Connect
+**IMPORTANT**: This project uses Databricks Connect to run all PySpark code remotely on Databricks clusters.
+- Do NOT install PySpark locally
+- ALWAYS use `databricks.connect.DatabricksSession` instead of `pyspark.sql.SparkSession`
+- All Spark operations execute remotely on your configured Databricks cluster
 
 ## Common Commands
 
@@ -78,65 +78,42 @@ uv run ruff check .
 
 ## Architecture
 
-### Medallion Architecture
-The ETL pipeline follows the medallion architecture with three layers:
+### Project Structure
+Organize your code according to your project needs. Common patterns include:
 
-**Bronze Layer** (`src/etl/bronze/`)
-- Raw data ingestion from source systems
-- Minimal transformations (add metadata like ingestion timestamp, source file)
-- Data stored in original format with audit columns
-- Append-only for full history
-
-**Silver Layer** (`src/etl/silver/`)
-- Cleansed and validated data
-- Remove duplicates, handle nulls, standardize formats
-- Data quality validations and flags
-- Typically overwrite mode for current state
-
-**Gold Layer** (`src/etl/gold/`)
-- Business-level aggregations and metrics
-- Optimized for reporting and analytics
-- Denormalized for query performance
-- Business logic applied
-
-### Base ETL Class
-All ETL jobs inherit from `BaseETL` (`src/etl/base.py`) which provides:
-- `extract()`: Read data from source
-- `transform()`: Apply transformations
-- `load()`: Write data to target
-- `run()`: Execute full pipeline
-
-### Module Structure
+**Medallion Architecture (ETL Projects)**
 ```
-src/etl/
-├── base.py              # BaseETL abstract class
-├── bronze/              # Raw data ingestion modules
-├── silver/              # Data cleansing modules
-└── gold/                # Aggregation and business logic modules
+src/
+├── etl/
+│   ├── base.py          # Base ETL class
+│   ├── bronze/          # Raw data ingestion
+│   ├── silver/          # Data cleansing
+│   └── gold/            # Business aggregations
 ```
 
-### Creating New ETL Jobs
-1. Create a new module in the appropriate layer directory (bronze/silver/gold)
-2. Inherit from `BaseETL` and implement `extract()`, `transform()`, and `load()` methods
-3. Initialize with source path and optional SparkSession
-4. Call `run(target_path)` to execute the pipeline
-
-Example:
-```python
-from src.etl.bronze.example_ingestion import ExampleBronzeETL
-
-etl = ExampleBronzeETL(source_path="/path/to/source")
-etl.run(target_path="/path/to/bronze/table")
+**Application Structure**
+```
+src/
+├── models/              # Data models
+├── services/            # Business logic
+├── utils/               # Helper functions
+└── pipelines/           # Data pipelines
 ```
 
-### Data Formats
-- All layers use Delta Lake format for ACID transactions and time travel
-- Bronze layer preserves original data structure
-- Silver and gold layers may reshape data for optimization
+### Best Practices
 
-### Testing Strategy
-- Unit tests in `tests/` mirror the `src/` structure
-- Use local Spark sessions for testing
-- Mock external dependencies
-- Test each ETL method (extract, transform, load) independently
-- We do not need PySpark installed locally. We are using Databricks Connect to run all PySpark code remotely against a Databricks cluster. So along those same lines, do not ever use pyspark.sql.SparkSession. Instead use databricks.connect.DatabricksSession!
+**Data Processing**
+- Use Delta Lake format for ACID transactions and time travel
+- Implement proper error handling and logging
+- Write modular, testable code
+
+**Testing Strategy**
+- Unit tests in `tests/` should mirror the `src/` structure
+- Use DatabricksSession fixtures for integration tests (see `tests/conftest.py`)
+- Test data transformations with sample data
+- All tests run against your remote Databricks cluster via Databricks Connect
+
+**Code Organization**
+- Keep business logic separate from data access code
+- Use type hints for better code clarity
+- Document complex transformations and business rules

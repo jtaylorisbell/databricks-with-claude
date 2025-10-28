@@ -1,6 +1,6 @@
-# Databricks with Claude
+# Databricks Project Template
 
-PySpark ETL modules for Databricks workflows.
+A template repository for building PySpark applications and ETL workflows on Databricks with Claude Code support.
 
 ## Setup
 
@@ -88,15 +88,15 @@ uv add <package_name>
 ## Project Structure
 
 ```
-databricks-with-claude/
-├── src/
-│   └── etl/           # ETL modules
-│       ├── bronze/    # Raw data ingestion
-│       ├── silver/    # Cleaned and validated data
-│       └── gold/      # Business-level aggregates
-├── tests/             # Test files
+databricks-project/
+├── src/               # Source code
+├── tests/             # Test files with pytest fixtures
 ├── notebooks/         # Databricks notebooks (optional)
-└── pyproject.toml     # Project dependencies
+├── app/               # Application code
+├── main.py            # Main entry point
+├── pyproject.toml     # Project dependencies
+├── CLAUDE.md          # Claude Code instructions
+└── .mcp.json          # MCP server configuration
 ```
 
 ## Running Tests
@@ -105,6 +105,17 @@ databricks-with-claude/
 uv run pytest
 ```
 
+## Running the Application
+
+```bash
+uv run python main.py
+```
+
 ## Development
 
-Each ETL module should be self-contained and follow the medallion architecture pattern (bronze → silver → gold).
+This template is configured to work with:
+- **Databricks Connect**: Run PySpark code remotely on Databricks clusters
+- **Claude Code**: AI-assisted development with project-specific instructions
+- **MCP Servers**: Direct database queries via Databricks SQL MCP server
+
+Refer to `CLAUDE.md` for detailed development guidelines and architecture patterns.

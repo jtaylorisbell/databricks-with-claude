@@ -1,12 +1,10 @@
 [project]
-name = "databricks-with-claude"
+name = "databricks-project-template"
 version = "0.1.0"
-description = "PySpark ETL modules for Databricks"
+description = "Databricks project template with PySpark and Claude Code support"
 requires-python = ">=3.12"
 dependencies = [
     "databricks-connect>=17",
-    "pip>=25.2",
-    "pytest>=8.4.2",
 ]
 
 [build-system]
@@ -20,5 +18,5 @@ packages = ["src"]
 dev = [
     "pytest>=7.0.0",
     "pytest-cov>=4.0.0",
-    "pytest-mock>=3.15.1",
+    "pytest-mock>=3.14.0",
 ]
