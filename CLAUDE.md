@@ -139,3 +139,4 @@ etl.run(target_path="/path/to/bronze/table")
 - Use local Spark sessions for testing
 - Mock external dependencies
 - Test each ETL method (extract, transform, load) independently
+- We do not need PySpark installed locally. We are using Databricks Connect to run all PySpark code remotely against a Databricks cluster. So along those same lines, do not ever use pyspark.sql.SparkSession. Instead use databricks.connect.DatabricksSession!
