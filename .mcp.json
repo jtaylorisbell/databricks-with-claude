@@ -6,6 +6,12 @@
       "headers": {
         "Authorization": "Bearer ${DATABRICKS_TOKEN}"
       }
+    },
+    "playwright": {
+      "command": "npx",
+      "args": [
+        "@playwright/mcp@latest"
+      ]
     }
   }
 }
