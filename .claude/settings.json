@@ -2,7 +2,7 @@
   "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
     "databricks-sql",
-    "playwright"
+    "sequential-thinking"
   ],
   "hooks": {
     "UserPromptSubmit": [
