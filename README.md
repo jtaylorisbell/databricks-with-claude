@@ -1,6 +1,6 @@
 # Databricks with Claude ⚡
 
-PySpark ETL modules for Databricks workflows.
+A template repo for developing data projects on Databricks with Claude Code 🤖.
 
 ## 🚀 Setup
 
