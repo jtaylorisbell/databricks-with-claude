@@ -52,3 +52,9 @@ htmlcov/
 logs/
 
 .databricks
+
+# Claude Code user-specific settings
+.claude/settings.local.json
+.claude/hooks/state/
+.claude/hooks/node_modules/
+.claude/tsc-cache/

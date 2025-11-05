@@ -2,10 +2,14 @@
   "mcpServers": {
     "databricks-sql": {
       "type": "http",
-      "url": "${DATABRICKS_HOST}/api/2.0/mcp/sql",
-      "headers": {
-        "Authorization": "Bearer ${DATABRICKS_TOKEN}"
-      }
+      "url": "${DATABRICKS_HOST}/api/2.0/mcp/sql"
+    },
+    "sequential-thinking": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-sequential-thinking"
+      ]
     }
   }
 }

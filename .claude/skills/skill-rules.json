@@ -1,0 +1,200 @@
+{
+  "version": "1.0",
+  "description": "Skill activation triggers for Python/Databricks project with Claude Code",
+  "skills": {
+    "skill-developer": {
+      "type": "domain",
+      "enforcement": "suggest",
+      "priority": "medium",
+      "description": "Meta-skill for creating and managing Claude Code skills. Use when working with skill-rules.json, creating new skills, understanding trigger patterns, or debugging skill activation.",
+      "promptTriggers": {
+        "keywords": [
+          "skill",
+          "skills",
+          "trigger",
+          "activation",
+          "skill-rules",
+          "hook",
+          "hooks",
+          "YAML frontmatter",
+          "progressive disclosure",
+          "500-line rule",
+          "create skill",
+          "add skill",
+          "skill not working",
+          "skill not activating"
+        ],
+        "intentPatterns": [
+          "(create|add|build|make).*?skill",
+          "(debug|fix|troubleshoot).*?skill",
+          "(understand|explain).*?(trigger|activation|hook)",
+          "skill.*?(not working|not activating|doesn't work)"
+        ]
+      },
+      "fileTriggers": {
+        "pathPatterns": [
+          ".claude/skills/**/*.md",
+          ".claude/skills/skill-rules.json",
+          ".claude/hooks/**/*.ts",
+          ".claude/hooks/**/*.sh"
+        ]
+      }
+    },
+    "pyspark-best-practices": {
+      "type": "domain",
+      "enforcement": "suggest",
+      "priority": "high",
+      "description": "PySpark coding best practices including performance optimization, DataFrame operations, UDFs, caching, and anti-patterns. Activates when working with PySpark code or optimization.",
+      "promptTriggers": {
+        "keywords": [
+          "pyspark",
+          "spark",
+          "dataframe",
+          "udf",
+          "optimize",
+          "performance",
+          "cache",
+          "partition",
+          "broadcast",
+          "collect",
+          "rdd",
+          "catalyst",
+          "tungsten",
+          "spark.sql",
+          "repartition",
+          "coalesce"
+        ],
+        "intentPatterns": [
+          "(optimize|improve|speed up).*?(pyspark|spark|query|dataframe)",
+          "(write|create|build).*?(pyspark|spark|transformation)",
+          "spark.*?(slow|performance|issue)",
+          "(avoid|anti-pattern).*?pyspark"
+        ]
+      },
+      "fileTriggers": {
+        "pathPatterns": [
+          "src/**/*.py",
+          "tests/**/*.py"
+        ]
+      }
+    },
+    "databricks-etl-patterns": {
+      "type": "domain",
+      "enforcement": "suggest",
+      "priority": "high",
+      "description": "ETL pipeline patterns including BaseETL usage, data quality, incremental loads, error handling, and testing. Activates when building or modifying ETL jobs.",
+      "promptTriggers": {
+        "keywords": [
+          "etl",
+          "pipeline",
+          "baseetl",
+          "extract",
+          "transform",
+          "load",
+          "incremental",
+          "data quality",
+          "validation",
+          "idempotent",
+          "merge",
+          "upsert",
+          "quarantine",
+          "checkpoint",
+          "metadata"
+        ],
+        "intentPatterns": [
+          "(create|build|implement).*?(etl|pipeline)",
+          "(extract|transform|load).*?data",
+          "data.*?(quality|validation)",
+          "(incremental|merge|upsert).*?(load|data)",
+          "baseetl"
+        ]
+      },
+      "fileTriggers": {
+        "pathPatterns": [
+          "src/etl/**/*.py",
+          "tests/etl/**/*.py"
+        ]
+      }
+    },
+    "medallion-architecture": {
+      "type": "domain",
+      "enforcement": "suggest",
+      "priority": "high",
+      "description": "Medallion architecture guidance for bronze, silver, and gold layers including layer responsibilities, data flow, and patterns. Activates when working with specific layers.",
+      "promptTriggers": {
+        "keywords": [
+          "bronze",
+          "silver",
+          "gold",
+          "medallion",
+          "layer",
+          "layers",
+          "raw data",
+          "cleansed",
+          "curated",
+          "aggregation",
+          "data lake"
+        ],
+        "intentPatterns": [
+          "(bronze|silver|gold).*?(layer|etl|pipeline)",
+          "(create|build).*?(bronze|silver|gold)",
+          "which layer",
+          "medallion.*?architecture",
+          "data.*?flow"
+        ]
+      },
+      "fileTriggers": {
+        "pathPatterns": [
+          "src/etl/bronze/**/*.py",
+          "src/etl/silver/**/*.py",
+          "src/etl/gold/**/*.py"
+        ]
+      }
+    },
+    "unity-catalog-data-discovery": {
+      "type": "domain",
+      "enforcement": "suggest",
+      "priority": "high",
+      "description": "Unity Catalog metadata discovery patterns including DESCRIBE TABLE, SELECT LIMIT, schema inspection, and table exploration. Critical for understanding table schemas before writing ETL transformations.",
+      "promptTriggers": {
+        "keywords": [
+          "unity catalog",
+          "table schema",
+          "describe table",
+          "table metadata",
+          "column names",
+          "data types",
+          "discover tables",
+          "inspect schema",
+          "table structure",
+          "catalog exploration",
+          "schema discovery",
+          "show tables",
+          "show schemas",
+          "show catalogs",
+          "information_schema",
+          "describe extended",
+          "table properties",
+          "sample data",
+          "explore catalog"
+        ],
+        "intentPatterns": [
+          "(describe|inspect|explore|discover|check).*?(table|schema|catalog|metadata|columns)",
+          "(what|which|show).*?(tables|schemas|catalogs|columns)",
+          "(get|retrieve|find).*?(schema|metadata|column|table.*?structure)",
+          "table.*?(exist|available|structure|schema)",
+          "column.*?(names|types|metadata)",
+          "(view|see|show).*?sample.*?data",
+          "before.*?(writing|creating|building).*?(etl|transformation|pipeline)"
+        ]
+      },
+      "fileTriggers": {
+        "pathPatterns": [
+          "src/etl/**/*.py",
+          "tests/etl/**/*.py",
+          "notebooks/**/*.ipynb"
+        ]
+      }
+    }
+  }
+}
